@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Memes Page</title>
+  <style>
+    #copyMessage {
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffcc00;
+      padding: 10px 20px;
+      border-radius: 10px;
+      display: none;
+      font-size: 18px;
+      font-weight: bold;
+      animation: fadeInMessage 2s forwards;
+    }
+    body {
+      background-color: #0074D9;
+      color: white;
+      font-family: 'Fredoka One', cursive, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 50px 20px;
+    }
+    h1 {
+      font-size: 48px;
+      margin-bottom: 30px;
+    }
+    p {
+      font-size: 24px;
+      margin-bottom: 50px;
+    }
+    
+    /* Videos section */
+    .videos-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto 50px;
+    }
+    .video-item {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 15px;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+      transition: transform 0.3s;
+      cursor: pointer;
+    }
+    .video-item:hover {
+      transform: scale(1.03);
+    }
+    .video-thumbnail {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      border-radius: 10px;
+      overflow: hidden;
+      background-color: #000;
+    }
+    .video-thumbnail video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .play-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      background: rgba(255, 204, 0, 0.8);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+    .play-button::after {
+      content: "";
+      display: block;
+      width: 0;
+      height: 0;
+      border-top: 15px solid transparent;
+      border-left: 25px solid #003366;
+      border-bottom: 15px solid transparent;
+      margin-left: 5px;
+    }
+    .video-title {
+      margin-top: 15px;
+      font-size: 18px;
+      text-align: left;
+    }
+    
+    /* Memes section */
+    .memes-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .meme {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+      transition: transform 0.3s;
+    }
+    .meme:hover {
+      transform: scale(1.05);
+    }
+    .meme img {
+      width: 100%;
+      border-radius: 10px;
+    }
+    .download-link {
+      margin-top: 10px;
+      display: inline-block;
+      background-color: #ffcc00;
+      color: #003366;
+      padding: 8px 15px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 16px;
+    }
+    .download-link:hover {
+      background-color: #ffd633;
+    }
+    a.back-home {
+      color: #ffcc00;
+      text-decoration: none;
+      font-size: 20px;
+      display: inline-block;
+      margin-top: 40px;
+    }
+    #infoBox {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 15px;
+      padding: 15px 20px;
+      backdrop-filter: blur(10px);
+      font-size: 14px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      text-align: left;
+    }
+    #infoBox a {
+      color: #ffcc00;
+      font-weight: bold;
+      text-decoration: none;
+      font-size: 16px;
+    }
+    #infoBox button {
+      margin-top: 10px;
+      background-color: #ffcc00;
+      color: #003366;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    #infoBox button:hover {
+      background-color: #ffd633;
+    }
+
+    /* Video modal */
+    .video-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .video-modal-content {
+      width: 90%;
+      max-width: 900px;
+      position: relative;
+    }
+    .close-modal {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+    }
+    .video-player {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border: none;
+      border-radius: 10px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 36px;
+      }
+      p {
+        font-size: 20px;
+      }
+      body {
+        padding: 80px 15px 30px;
+      }
+      #infoBox {
+        position: relative;
+        top: auto;
+        left: auto;
+        margin-bottom: 30px;
+      }
+      .videos-container {
+        grid-template-columns: 1fr;
+      }
+      .coming-soon {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #001f3f 0%, #0074D9 100%);
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="infoBox">
+    <a href="https://pump.fun/" target="_blank" rel="noopener noreferrer">pump.fun</a> <br>
+    <a href="https://x.com/" target="_blank" rel="noopener noreferrer">X.com</a>
+    <div><strong>CA:</strong> <span id="contract">1234...pump</span></div>
+    <button onclick="copyContract()">Copy Address</button>
+  </div>
+
+  <h1>🎉 You made it to the Moon! 🎉</h1>
+  <p>Enjoy the Bonk videos and memes 🚀😂</p>
+  <div id="copyMessage">Copied!</div>
+
+  <!-- Videos Section -->
+  <div class="videos-container">
+    <div class="video-item" onclick="playVideo('{{ url_for('static', filename='videos/bonk1.mp4') }}', 'Bonk Adventure')">
+      <div class="video-thumbnail">
+        <video muted loop>
+          <source src="{{ url_for('static', filename='videos/bonk1.mp4') }}" type="video/mp4">
+        </video>
+        <div class="play-button"></div>
+      </div>
+      <div class="video-title">Bonk Adventure</div>
+    </div>
+    
+    <div class="video-item" onclick="playVideo('{{ url_for('static', filename='videos/bonk2.mp4') }}', 'Bonk Meme Compilation')">
+      <div class="video-thumbnail">
+        <video muted loop>
+          <source src="{{ url_for('static', filename='videos/bonk2.mp4') }}" type="video/mp4">
+        </video>
+        <div class="play-button"></div>
+      </div>
+      <div class="video-title">Bonk Meme Compilation</div>
+    </div>
+    
+    <div class="video-item" onclick="playVideo('{{ url_for('static', filename='videos/bonk3.mp4') }}', 'Bonk to the Moon')">
+      <div class="video-thumbnail">
+        <video muted loop>
+          <source src="{{ url_for('static', filename='videos/bonk3.mp4') }}" type="video/mp4">
+        </video>
+        <div class="play-button"></div>
+      </div>
+      <div class="video-title">Bonk to the Moon</div>
+    </div>
+    <div class="video-item" onclick="playVideo('{{ url_for('static', filename='videos/bonk4.mp4') }}', 'Bonk to the Moon')">
+      <div class="video-thumbnail">
+        <video muted loop>
+          <source src="{{ url_for('static', filename='videos/bonk4.mp4') }}" type="video/mp4">
+        </video>
+        <div class="play-button"></div>
+      </div>
+      <div class="video-title">Bonk to the Moon</div>
+    </div>
+    <div class="video-item">
+      <div class="video-thumbnail">
+        <div class="coming-soon">Coming Soon</div>
+        <div class="play-button"></div>
+      </div>
+      <div class="video-title">More Bonk Content</div>
+    </div>
+  </div>
+
+  <!-- Video Modal -->
+  <div id="videoModal" class="video-modal">
+    <div class="video-modal-content">
+      <span class="close-modal" onclick="closeVideo()">&times;</span>
+      <video id="videoPlayer" class="video-player" controls>
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </div>
+
+  <!-- Memes Section -->
+  <div class="memes-container">
+    <div class="meme">
+      <img src="{{ url_for('static', filename='memes/bonk11.png') }}" alt="Bonk Meme 5">
+    </div>
+
+    <div class="meme">
+      <img src="{{ url_for('static', filename='memes/bonk2.png') }}" alt="Bonk Meme 2">
+    </div>
+
+    <div class="meme">
+      <img src="{{ url_for('static', filename='memes/bonk3.png') }}" alt="Bonk Meme 3">
+    </div>
+
+    <div class="meme">
+      <img src="{{ url_for('static', filename='memes/bonk4.png') }}" alt="Bonk Meme 4">
+    </div>
+
+    <div class="meme">
+      <img src="{{ url_for('static', filename='memes/bonk5.png') }}" alt="Bonk Meme 5">
+    </div>
+    <div class="meme">
+      <img src="{{ url_for('static', filename='memes/bonk6.png') }}" alt="Bonk Meme 6">
+    </div>
+    
+    <div class="meme">
+      <img src="{{ url_for('static', filename='memes/bonk13.png') }}" alt="Bonk Meme 7">
+    </div>
+    
+    <div class="meme">
+      <img src="{{ url_for('static', filename='memes/bonk10.png') }}" alt="Bonk Meme 8">
+    </div>
+  </div>
+
+  <a class="back-home" href="/">🏠 Back to Home</a>
+
+  <script>
+    function copyContract() {
+      const contract = document.getElementById('contract').innerText;
+      navigator.clipboard.writeText(contract).then(() => {
+        copyMessage.style.display = 'block';
+        setTimeout(() => {
+          copyMessage.style.display = 'none';
+        }, 2000);
+      });
+    }
+
+    // Video player functionality
+    function playVideo(videoSrc, title) {
+      const modal = document.getElementById('videoModal');
+      const videoPlayer = document.getElementById('videoPlayer');
+      
+      // Set video source and title
+      videoPlayer.src = videoSrc;
+      videoPlayer.setAttribute('title', title);
+      
+      // Show modal
+      modal.style.display = 'flex';
+      
+      // Play video
+      videoPlayer.play();
+    }
+
+    function closeVideo() {
+      const modal = document.getElementById('videoModal');
+      const videoPlayer = document.getElementById('videoPlayer');
+      
+      // Pause video
+      videoPlayer.pause();
+      videoPlayer.currentTime = 0;
+      
+      // Hide modal
+      modal.style.display = 'none';
+    }
+
+    // Close modal when clicking outside video
+    window.onclick = function(event) {
+      const modal = document.getElementById('videoModal');
+      if (event.target == modal) {
+        closeVideo();
+      }
+    }
+
+    // Auto-play thumbnails (muted)
+    document.addEventListener('DOMContentLoaded', function() {
+      const thumbnails = document.querySelectorAll('.video-thumbnail video');
+      thumbnails.forEach(video => {
+        video.play().catch(e => console.log("Autoplay prevented:", e));
+      });
+    });
+  </script>
+
+</body>
+</html>
